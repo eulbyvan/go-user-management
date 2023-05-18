@@ -7,6 +7,7 @@
 package delivery
 
 import (
+	"fmt"
 	"strconv"
 
 	"github.com/eulbyvan/go-user-management/internal/entity"
@@ -44,7 +45,7 @@ func (u *userHandler) InsertUser(c *gin.Context) {
 		return
 	}
 
-	c.JSON(200, gin.H{"data": result})
+	c.JSON(201, gin.H{"data": result})
 }
 
 func (u *userHandler) UpdateUser(c *gin.Context) {
@@ -72,13 +73,15 @@ func (u *userHandler) DeleteUser(c *gin.Context) {
 		return
 	}
 
-	result, err := u.userUsecase.DeleteUser(&entity.User{ID: id})
+	err = u.userUsecase.DeleteUser(&entity.User{ID: id})
 	if err != nil {
 		c.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(200, gin.H{"data": result})
+	msg := fmt.Sprintf("user with id %d has been deleted", id)
+
+	c.JSON(200, gin.H{"message": msg})
 }
 
 func (u *userHandler) FindUserByID(c *gin.Context) {

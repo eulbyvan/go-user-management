@@ -14,7 +14,7 @@ import (
 type UserUsecase interface {
 	InsertUser(*entity.User) (*entity.User, error)
 	UpdateUser(*entity.User) (*entity.User, error)
-	DeleteUser(*entity.User) (*entity.User, error)
+	DeleteUser(*entity.User) error
 	FindUserByID(int64) (*entity.User, error)
 	FindUserByUsername(string) (*entity.User, error)
 	FindAllUser() ([]entity.User, error)
@@ -36,7 +36,7 @@ func (u *userUsecase) UpdateUser(user *entity.User) (*entity.User, error) {
 	return u.userRepository.UpdateUser(user)
 }
 
-func (u *userUsecase) DeleteUser(user *entity.User) (*entity.User, error) {
+func (u *userUsecase) DeleteUser(user *entity.User) error {
 	return u.userRepository.DeleteUser(user)
 }
 

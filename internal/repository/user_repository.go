@@ -14,7 +14,7 @@ import (
 type UserRepository interface {
 	InsertUser(*entity.User) (*entity.User, error)
 	UpdateUser(*entity.User) (*entity.User, error)
-	DeleteUser(*entity.User) (*entity.User, error)
+	DeleteUser(*entity.User) error
 	FindUserByID(int64) (*entity.User, error)
 	FindUserByUsername(string) (*entity.User, error)
 	FindAllUser() ([]entity.User, error)
@@ -42,11 +42,11 @@ func (r *userRepository) UpdateUser(user *entity.User) (*entity.User, error) {
 	return user, nil
 }
 
-func (r *userRepository) DeleteUser(user *entity.User) (*entity.User, error) {
+func (r *userRepository) DeleteUser(user *entity.User) error {
 	if err := r.db.Delete(user).Error; err != nil {
-		return nil, err
+		return err
 	}
-	return user, nil
+	return nil
 }
 
 func (r *userRepository) FindUserByID(id int64) (*entity.User, error) {
