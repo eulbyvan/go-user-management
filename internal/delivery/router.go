@@ -16,10 +16,13 @@ func SetupRouter(userUsecase usecase.UserUsecase) *gin.Engine {
 
 	userHandler := NewUserHandler(userUsecase)
 
+	r.POST("/auth/login", userHandler.Login)
+
 	api := r.Group("/api/v1")
 	{
 		users := api.Group("/users")
 		{
+			users.Use(Authentication())
 			users.POST("/", userHandler.InsertUser)
 			users.PUT("/:id", userHandler.UpdateUser)
 			users.DELETE("/:id", userHandler.DeleteUser)

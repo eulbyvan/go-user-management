@@ -18,6 +18,7 @@ type UserUsecase interface {
 	FindUserByID(int64) (*entity.User, error)
 	FindUserByUsername(string) (*entity.User, error)
 	FindAllUser() ([]entity.User, error)
+	Login(*entity.User) (*entity.User, error)
 }
 
 type userUsecase struct {
@@ -50,4 +51,8 @@ func (u *userUsecase) FindUserByUsername(username string) (*entity.User, error) 
 
 func (u *userUsecase) FindAllUser() ([]entity.User, error) {
 	return u.userRepository.FindAllUser()
+}
+
+func (u *userUsecase) Login(user *entity.User) (*entity.User, error) {
+	return u.userRepository.FindUserByUsername(user.Username)
 }
