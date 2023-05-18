@@ -7,6 +7,8 @@
 package usecase
 
 import (
+	"golang.org/x/crypto/bcrypt"
+
 	"github.com/eulbyvan/go-user-management/internal/entity"
 	"github.com/eulbyvan/go-user-management/internal/repository"
 )
@@ -30,6 +32,12 @@ func NewUserUsecase(userRepository repository.UserRepository) UserUsecase {
 }
 
 func (u *userUsecase) InsertUser(user *entity.User) (*entity.User, error) {
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
+	if err != nil {
+		return nil, err
+	}
+	user.Password = string(hashedPassword)
+
 	return u.userRepository.InsertUser(user)
 }
 
