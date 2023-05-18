@@ -7,15 +7,14 @@
 package server
 
 import (
+	"database/sql"
 	"net/http"
 
 	"github.com/eulbyvan/go-user-management/internal/delivery"
-	"github.com/eulbyvan/go-user-management/internal/entity"
 	"github.com/eulbyvan/go-user-management/internal/repository"
 	"github.com/eulbyvan/go-user-management/internal/usecase"
 	"github.com/gin-gonic/gin"
-	"gorm.io/driver/postgres"
-	"gorm.io/gorm"
+	_ "github.com/lib/pq"
 )
 
 type Server struct {
@@ -28,14 +27,16 @@ func NewServer() *Server {
 
 func (s *Server) Initialize(connStr string) error {
 	// Initialize database connection
-	dsn := connStr
-	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	db, err := sql.Open("postgres", connStr)
 	if err != nil {
 		return err
 	}
 
-	// Automatically create the necessary database tables
-	db.AutoMigrate(&entity.User{})
+	// Check if the connection is successful
+	err = db.Ping()
+	if err != nil {
+		return err
+	}
 
 	// Initialize repositories and use cases
 	userRepo := repository.NewUserRepository(db)
