@@ -19,6 +19,6 @@ func NewConfig() *Config {
 
 func (c *Config) Load() {
 	// Load your configuration values from a configuration file or other sources
-	c.PostgresConnectionString = utility.GetEnv("CONNECTION_STRING", "host=localhost user=postgres password=postgres dbname=postgres port=5432 sslmode=disable TimeZone=Asia/Shanghai")
+	c.PostgresConnectionString = utility.GetEnv("CONNECTION_STRING", "host=localhost port=5432 user=postgres password=postgres dbname=user_management_db sslmode=disable")
 	c.ServerAddress = utility.GetEnv("SERVER_ADDRESS", ":8080")
 }
