@@ -11,6 +11,7 @@ import (
 	"os"
 
 	"github.com/joho/godotenv"
+	"golang.org/x/crypto/bcrypt"
 )
 
 func GetEnv(key string, v ...any) string {
@@ -27,4 +28,12 @@ func GetEnv(key string, v ...any) string {
 	}
 
 	return v[0].(string)
+}
+
+func Encrypt(str string) string {
+	encryptedPassword, err := bcrypt.GenerateFromPassword([]byte(str), bcrypt.DefaultCost)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return string(encryptedPassword)
 }

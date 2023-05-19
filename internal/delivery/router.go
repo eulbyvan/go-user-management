@@ -16,19 +16,16 @@ func SetupRouter(userUsecase usecase.UserUsecase) *gin.Engine {
 
 	userHandler := NewUserHandler(userUsecase)
 
-	r.POST("/auth/login", userHandler.Login)
-
 	api := r.Group("/api/v1")
 	{
 		users := api.Group("/users")
 		{
-			users.Use(Authentication())
-			users.POST("/", userHandler.InsertUser)
-			users.PUT("/:id", userHandler.UpdateUser)
-			users.DELETE("/:id", userHandler.DeleteUser)
-			users.GET("/:id", userHandler.FindUserByID)
-			users.GET("/username/:username", userHandler.FindUserByUsername)
-			users.GET("/", userHandler.FindAllUser)
+			users.POST("/", userHandler.Register)
+			users.PUT("/:id", userHandler.Edit)
+			users.DELETE("/:id", userHandler.Unreg)
+			users.GET("/:id", userHandler.GetUserByID)
+			users.GET("/user", userHandler.GetUserByUsername)
+			users.GET("/", userHandler.GetAllUsers)
 		}
 	}
 

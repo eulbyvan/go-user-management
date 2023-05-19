@@ -7,60 +7,61 @@
 package usecase
 
 import (
-	"golang.org/x/crypto/bcrypt"
-
 	"github.com/eulbyvan/go-user-management/internal/entity"
 	"github.com/eulbyvan/go-user-management/internal/repository"
+	"github.com/eulbyvan/go-user-management/pkg/utility"
 )
 
 type UserUsecase interface {
-	InsertUser(*entity.User) (*entity.User, error)
-	UpdateUser(*entity.User) (*entity.User, error)
-	DeleteUser(*entity.User) error
-	FindUserByID(int64) (*entity.User, error)
-	FindUserByUsername(string) (*entity.User, error)
-	FindAllUser() ([]entity.User, error)
-	Login(*entity.User) (*entity.User, error)
+	Register(newUser *entity.User) (*entity.User, error)
+	Edit(updatedUser *entity.User) (*entity.User, error)
+	Unreg(deletedUser *entity.User) error
+	GetUserByID(id int64) (*entity.User, error)
+	GetUserByUsername(username string) (*entity.User, error)
+	GetAllUsers() ([]entity.User, error)
 }
 
 type userUsecase struct {
-	userRepository repository.UserRepository
+	userRepo repository.UserRepository
 }
 
-func NewUserUsecase(userRepository repository.UserRepository) UserUsecase {
-	return &userUsecase{userRepository}
+// Edit implements UserUsecase
+func (u *userUsecase) Edit(updatedUser *entity.User) (*entity.User, error) {
+	// Business Logic
+	updatedUser.Password = utility.Encrypt(updatedUser.Password)
+
+	return u.userRepo.UpdateUser(updatedUser)
 }
 
-func (u *userUsecase) InsertUser(user *entity.User) (*entity.User, error) {
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
-	if err != nil {
-		return nil, err
-	}
-	user.Password = string(hashedPassword)
-
-	return u.userRepository.InsertUser(user)
+// GetAllUsers implements UserUsecase
+func (u *userUsecase) GetAllUsers() ([]entity.User, error) {
+	return u.userRepo.FindAllUser()
 }
 
-func (u *userUsecase) UpdateUser(user *entity.User) (*entity.User, error) {
-	return u.userRepository.UpdateUser(user)
+// GetUserByID implements UserUsecase
+func (u *userUsecase) GetUserByID(id int64) (*entity.User, error) {
+	return u.userRepo.FindUserByID(id)
 }
 
-func (u *userUsecase) DeleteUser(user *entity.User) error {
-	return u.userRepository.DeleteUser(user)
+// GetUserByUsername implements UserUsecase
+func (u *userUsecase) GetUserByUsername(username string) (*entity.User, error) {
+	return u.userRepo.FindUserByUsername(username)
 }
 
-func (u *userUsecase) FindUserByID(id int64) (*entity.User, error) {
-	return u.userRepository.FindUserByID(id)
+// Register implements UserUsecase
+func (u *userUsecase) Register(newUser *entity.User) (*entity.User, error) {
+	// Business Logic
+	newUser.Password = utility.Encrypt(newUser.Password)
+
+	// Tulis ke db melalui repo
+	return u.userRepo.InsertUser(newUser)
 }
 
-func (u *userUsecase) FindUserByUsername(username string) (*entity.User, error) {
-	return u.userRepository.FindUserByUsername(username)
+// Unreg implements UserUsecase
+func (u *userUsecase) Unreg(deletedUser *entity.User) error {
+	return u.userRepo.DeleteUser(deletedUser)
 }
 
-func (u *userUsecase) FindAllUser() ([]entity.User, error) {
-	return u.userRepository.FindAllUser()
-}
-
-func (u *userUsecase) Login(user *entity.User) (*entity.User, error) {
-	return u.userRepository.FindUserByUsername(user.Username)
+func NewUserUsecase(userRepo repository.UserRepository) UserUsecase {
+	return &userUsecase{userRepo}
 }
