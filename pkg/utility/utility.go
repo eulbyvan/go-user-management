@@ -7,20 +7,18 @@
 package utility
 
 import (
+	"github.com/joho/godotenv"
 	"golang.org/x/crypto/bcrypt"
 	"log"
 	"os"
-
-	"github.com/joho/godotenv"
 )
 
-func GetEnv(key string, v ...any) string {
-
-	// load .env file
-	err := godotenv.Load(".env")
-
+func GetEnv(key string, v ...interface{}) string {
+	// Load .env file
+	err := godotenv.Load("../../.env")
+	//err := godotenv.Load(".env")
 	if err != nil {
-		log.Fatalf("Error loading .env file")
+		log.Fatalf("Error loading .env file: %v", err)
 	}
 
 	if key != "" {
