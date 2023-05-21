@@ -44,7 +44,12 @@ func (u *userHandler) InsertUser(c *gin.Context) {
 		return
 	}
 
-	userInDb, _ := u.userUsecase.FindUserByUsername(user.Username)
+	userInDb, err := u.userUsecase.FindUserByUsername(user.Username)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
 	if userInDb != nil {
 		c.JSON(http.StatusConflict, gin.H{"error": "user already exists"})
 		return
