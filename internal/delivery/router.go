@@ -27,7 +27,7 @@ func SetupRouter(userUsecase usecase.UserUsecase) *gin.Engine {
 			users.PUT("/:id", userHandler.UpdateUser)
 			users.DELETE("/:id", userHandler.DeleteUser)
 			users.GET("/:id", userHandler.FindUserByID)
-			users.GET("/username/:username", userHandler.FindUserByUsername)
+			users.GET("/user", userHandler.FindUserByUsername)
 			users.GET("/", userHandler.FindAllUser)
 		}
 	}

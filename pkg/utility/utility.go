@@ -7,6 +7,7 @@
 package utility
 
 import (
+	"golang.org/x/crypto/bcrypt"
 	"log"
 	"os"
 
@@ -17,14 +18,22 @@ func GetEnv(key string, v ...any) string {
 
 	// load .env file
 	err := godotenv.Load(".env")
-   
+
 	if err != nil {
-	  log.Fatalf("Error loading .env file")
+		log.Fatalf("Error loading .env file")
 	}
-  
+
 	if key != "" {
-	  return os.Getenv(key)
+		return os.Getenv(key)
 	}
 
 	return v[0].(string)
+}
+
+func Encrypt(str string) string {
+	encryptedPassword, err := bcrypt.GenerateFromPassword([]byte(str), bcrypt.DefaultCost)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return string(encryptedPassword)
 }

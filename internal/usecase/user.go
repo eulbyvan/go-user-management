@@ -7,8 +7,12 @@
 package usecase
 
 import (
+	"errors"
+	"fmt"
 	"github.com/eulbyvan/go-user-management/internal/entity"
 	"github.com/eulbyvan/go-user-management/internal/repository"
+	"github.com/eulbyvan/go-user-management/pkg/utility"
+	"strconv"
 )
 
 type UserUsecase interface {
@@ -30,10 +34,27 @@ func NewUserUsecase(userRepository repository.UserRepository) UserUsecase {
 }
 
 func (u *userUsecase) InsertUser(user *entity.User) (*entity.User, error) {
+	minPasswordLength := utility.GetEnv("MIN_PASSWORD_LENGTH")
+	intMinPasswordLength, err := strconv.Atoi(minPasswordLength)
+	if err != nil {
+		return nil, err
+	}
+	if user.Username == "" {
+		return nil, errors.New("username is required")
+	}
+	if user.Password == "" {
+		return nil, errors.New("password is required")
+	}
+	if len(user.Password) < intMinPasswordLength {
+		return nil, fmt.Errorf("password must be at least %d characters long", intMinPasswordLength)
+	}
+
+	user.Password = utility.Encrypt(user.Password)
 	return u.userRepository.InsertUser(user)
 }
 
 func (u *userUsecase) UpdateUser(user *entity.User) (*entity.User, error) {
+	user.Password = utility.Encrypt(user.Password)
 	return u.userRepository.UpdateUser(user)
 }
 
